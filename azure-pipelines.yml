@@ -1,4 +1,4 @@
-name: FullStackCICD
+name: ReactCICD
 
 on:
   push:
@@ -13,26 +13,25 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js for Frontend
+    - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: 14
 
-    - name: Install Frontend Dependencies
-      run: |
-        cd frontend
-        npm install
+    - name: Install Dependencies
+      run: npm install
 
-    - name: Build Frontend
-      run: |
-        cd frontend
-        npm run build
+    - name: Build React App
+      run: npm run build
 
-    - name: Archive Frontend Build Artifacts
+    - name: Run Tests (if applicable)
+      run: npm test
+
+    - name: Archive Build Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: frontend-build
-        path: frontend/build
+        name: build-artifacts
+        path: build
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,31 +40,12 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Download Frontend Build Artifacts
+    - name: Download Build Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: frontend-build
+        name: build-artifacts
 
-    - name: Set up Node.js for Backend
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
-
-    - name: Install Backend Dependencies
-      run: npm install
-
-    - name: Start Backend Server (adjust as needed)
-      run: npm start &
-
-    - name: Wait for Backend to Start
-      run: sleep 10s  # Adjust if needed
-
-    - name: Run Backend Integration Tests (if applicable)
-      run: npm test
-
-    - name: Deploy Backend (adjust deployment script)
+    - name: Deploy to Hosting Service
       run: |
-        # Example: Deploy to a hosting service like Heroku
-        npx heroku login
-        npx heroku git:remote -a your-heroku-app-name
-        git push heroku main
+        # Example: Deploy to Netlify
+        npx netlify-cli deploy --dir=build --prod
