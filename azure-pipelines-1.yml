@@ -21,12 +21,6 @@ steps:
 - task: Npm@1
   inputs:
     command: 'install'
-- script: |
-    pushd $(uiSource)
-    npm install
-    npm run build
-    nopd
-  displayName: 'npm install and build'
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(uiBuild)'
